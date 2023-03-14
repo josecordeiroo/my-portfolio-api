@@ -4,19 +4,14 @@
   "description": "Developing my fullstack portfolio with Node.js, React.js, MongoDB, Express and other tools.",
   "main": "server.js",
   "scripts": {
-    "backend": "nodemon server.js",
-    "frontend": "npm start --prefix frontend",
-    "frontendDev": "cd frontend && npm start",
-    "dev": "concurrently \"npm run backend\" \"npm run frontendDev\" ",
-    "start": "nodemon server.JS",
-    "heroku-postbuild": "npm install --legacy-peer-deps --prefix frontend && npm run build --prefix frontend"
+    "start": "nodemon server.js"
   },
   "keywords": [
     "MERN",
     "MongoDB",
     "Express",
     "React.js",
-    "Node.js",
+    "Node.js", 
     "Fullstack"
   ],
   "author": "José Cordeiro",
