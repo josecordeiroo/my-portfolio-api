@@ -1,48 +1,37 @@
-const express = require("express");
-const path = require("path");
-const logger = require("morgan");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const api = require("./routes");
-const mongoConnection = require("./db/mongoConnection");
-const dotenv = require("dotenv");
+const express = require('express')
+var path = require('path');
+var logger = require('morgan');
+require('./db/mongoConnection')
+require('dotenv').config()
 
-dotenv.config();
+var cors = require('cors')
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const api = require('./routes')
 
-// Configurações do CORS
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    exposedHeaders: ["Authorization"],
-    credentials: true,
-  })
-);
+const bodyParser = require('body-parser')
 
-// Middlewares
-app.use(logger("dev"));
+const app = express()
+
+// app.use(cors())
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS, PATCH, DELETE, POST, PUT');
+    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With,content-type, Authorization');
+    res.setHeader("Access-Control-Expose-Headers", "Authorization");
+    next();
+
+app.use(bodyParser.json())
+app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public")));
-app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Rotas
-app.use("/api", api);
+ });
 
-// Conexão com o MongoDB
-mongoConnection.on(
-  "error",
-  console.error.bind(console, "Erro na conexão com o MongoDB:")
-);
-mongoConnection.once("open", () => {
-  console.log("Conectado ao MongoDB!");
-});
+app.use('/api', api)
 
-// Inicia o servidor
+const PORT = process.env.PORT
 app.listen(PORT, () => {
-  console.log(`Servidor iniciado na porta ${PORT}.`);
-});
+    console.log('Server is connected')
+})
