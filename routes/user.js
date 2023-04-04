@@ -1,12 +1,14 @@
 const router = require("express").Router();
 const User = require("../models/User");
 
+require('dotenv').config()
+
 const jwt = require("jsonwebtoken");
 
 const withAuth = require("../middlewares/auth");
 
 require("dotenv").config();
-const secret = process.env.JWT_TOKEN;
+const secret = process.env.JWT_SECRET;
 
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
