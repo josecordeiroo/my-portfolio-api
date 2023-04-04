@@ -12,7 +12,7 @@ const bodyParser = require('body-parser')
 
 const app = express()
 
-// app.use(cors())
+app.use(cors())
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,14 +20,13 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With,content-type, Authorization');
     res.setHeader("Access-Control-Expose-Headers", "Authorization");
     next();
+});
 
 app.use(bodyParser.json())
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-
- });
 
 app.use('/api', api)
 
