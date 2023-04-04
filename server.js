@@ -1,47 +1,48 @@
-const express = require('express')
-var path = require('path');
-var logger = require('morgan');
-require('./db/mongoConnection')
-require('dotenv').config()
+const express = require("express");
+const path = require("path");
+const logger = require("morgan");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const api = require("./routes");
+const mongoConnection = require("./db/mongoConnection");
+const dotenv = require("dotenv");
 
-var cors = require('cors')
+dotenv.config();
 
-const api = require('./routes')
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-const bodyParser = require('body-parser')
+// Configurações do CORS
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Authorization"],
+    credentials: true,
+  })
+);
 
-const app = express()
-
-app.use(cors())
-app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS, PATCH, DELETE, POST, PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With,content-type, Authorization');
-    res.setHeader("Access-Control-Expose-Headers", "Authorization");
-    next();
-
-app.use(bodyParser.json())
-app.use(logger('dev'));
+// Middlewares
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(bodyParser.json());
 
- });
+// Rotas
+app.use("/api", api);
 
-app.use('/api', api)
+// Conexão com o MongoDB
+mongoConnection.on(
+  "error",
+  console.error.bind(console, "Erro na conexão com o MongoDB:")
+);
+mongoConnection.once("open", () => {
+  console.log("Conectado ao MongoDB!");
+});
 
-//Frontend connection (THIS IS FOR HEROKU)
-// if ( process.env.NODE_ENV === 'production') {
-//     app.use(express.static('frontend/build'))
-
-//     const path = require('path')
-//     app.get('*', (req, res) => {
-//         res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
-//     })
-// }
-
-const PORT = process.env.PORT
+// Inicia o servidor
 app.listen(PORT, () => {
-    console.log('Server is connected')
-})
+  console.log(`Servidor iniciado na porta ${PORT}.`);
+});
